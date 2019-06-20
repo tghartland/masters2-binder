@@ -28,5 +28,9 @@ s3.cern.ch
 $ argo submit --watch masters-workflow.yaml
 ```
 
+### Workflow overview
+
+In this example the workflow is finding expected limits at two mass points,
+and running two pods in parallel at each.
 
 ![](workflow_shape.png)
