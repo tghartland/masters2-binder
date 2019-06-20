@@ -15,6 +15,10 @@ spec:
     - name: limits-per-pod
       value: 50
 
+    # Mass points to find limits at
+    - name: mass-points
+      value: "[2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000]"
+
     - name: s3-endpoint
       value: "s3.cern.ch"
     - name: s3-secret-name
@@ -34,7 +38,7 @@ spec:
           parameters:
           - name: mass
             value: "{{item}}"
-        withItems: [2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000]
+        withParam: "{{workflow.parameters.mass-points}}"
 
       - name: limits-data
         # Find the upper limit of particle production rate based on the measured dijet distribution
