@@ -1,0 +1,232 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: masters-workflow-
+spec:
+  entrypoint: masters-workflow
+  arguments:
+    parameters:
+    - name: use-container
+      value: thartland/cl-fitting
+    # How many pods to run in parallel for each mass point
+    - name: expected-limits-parallelism
+      value: 14
+    # How many expected limits to find per pod
+    - name: limits-per-pod
+      value: 50
+
+    - name: s3-endpoint
+      value: "s3.cern.ch"
+    - name: s3-secret-name
+      value: "cern-s3-cred"
+    - name: s3-bucket-name
+      value: "thartland-argo-bucket"
+
+  templates:
+  - name: masters-workflow
+    dag:
+      tasks:
+      - name: limits-expected
+        # Find the expected upper limit of particle production rate based on dijet distributions
+        # generated from the theoretical standard model background
+        template: expected-limit-at-mass
+        arguments:
+          parameters:
+          - name: mass
+            value: "{{item}}"
+        withItems: [2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000]
+
+      - name: limits-data
+        # Find the upper limit of particle production rate based on the measured dijet distribution
+        template: limits-from-data
+
+      - name: plot
+        # Combine the generated expected limits and the limits obtained
+        # from the measured data into the final plot
+        template: plot
+        dependencies: [limits-expected, limits-data]
+
+  - name: expected-limit-at-mass
+    inputs:
+      parameters:
+      - name: mass
+    dag:
+      tasks:
+      - name: gen-expected-limits
+        template: generate-expected-limits
+        arguments:
+          parameters:
+          - name: mass
+            value: "{{inputs.parameters.mass}}"
+        withSequence:
+          count: "{{workflow.parameters.expected-limits-parallelism}}"
+          start: 0
+      - name: collect-mass-results
+        dependencies: [gen-expected-limits]
+        template: collect-results
+        arguments:
+          parameters:
+          - name: mass
+            value: "{{inputs.parameters.mass}}"
+
+  - name: generate-expected-limits
+    inputs:
+      parameters:
+      - name: mass
+    outputs:
+      artifacts:
+      - name: output
+        path: /output
+        archive:
+          none: {}
+        s3:
+          bucket: "{{workflow.parameters.s3-bucket-name}}"
+          endpoint: "{{workflow.parameters.s3-endpoint}}"
+          insecure: true
+          key: "{{workflow.name}}/generated/{{inputs.parameters.mass}}"
+          accessKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: accessKey
+          secretKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: secretKey
+    container:
+      image: "{{workflow.parameters.use-container}}"
+      imagePullPolicy: Always
+      resources:
+        requests:
+          cpu: 1
+      command: [python]
+      args:
+      - /fitting/limit_dist.py
+      - "--workflow={{workflow.name}}"
+      - "--pod={{pod.name}}"
+      - "--mass={{inputs.parameters.mass}}"
+      - "--sim-file=QStar/dataLikeHistograms.QStar{0}.root"
+      - "--sim-hist=mjj_Scaled_QStar{0}_30fb"
+      - "--data-dir=data"
+      - "--output-dir=/output"
+      - "--successes={{workflow.parameters.limits-per-pod}}"
+
+  - name: limits-from-data
+    outputs:
+      artifacts:
+      - name: info
+        path: /output
+        archive:
+          none: {}
+        s3:
+          bucket: "{{workflow.parameters.s3-bucket-name}}"
+          endpoint: "{{workflow.parameters.s3-endpoint}}"
+          insecure: true
+          key: "{{workflow.name}}/data/"
+          accessKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: accessKey
+          secretKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: secretKey
+    container:
+      image: "{{workflow.parameters.use-container}}"
+      imagePullPolicy: Always
+      resources:
+        requests:
+          cpu: 1
+      command: [python]
+      args:
+      - /fitting/limit_dist_data_qstar.py
+      - "--data-dir=data"
+      - "--output-dir=/output"
+
+  - name: collect-results
+    inputs:
+      parameters:
+        - name: mass
+      artifacts:
+      - name: data
+        path: /data
+        s3:
+          bucket: "{{workflow.parameters.s3-bucket-name}}"
+          endpoint: "{{workflow.parameters.s3-endpoint}}"
+          insecure: true
+          key: "{{workflow.name}}/generated/{{inputs.parameters.mass}}"
+          accessKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: accessKey
+          secretKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: secretKey
+    outputs:
+      artifacts:
+      - name: data
+        path: /data
+        archive:
+          none: {}
+        s3:
+          bucket: "{{workflow.parameters.s3-bucket-name}}"
+          endpoint: "{{workflow.parameters.s3-endpoint}}"
+          insecure: true
+          key: "{{workflow.name}}/generated/{{inputs.parameters.mass}}"
+          accessKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: accessKey
+          secretKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: secretKey
+    container:
+      image: alpine:latest
+      command: [sh, -c]
+      args: ["cat /data/* > /data/combined-{{inputs.parameters.mass}}.txt"]
+
+  - name: plot
+    inputs:
+      artifacts:
+      - name: data
+        path: /data
+        s3:
+          bucket: "{{workflow.parameters.s3-bucket-name}}"
+          endpoint: "{{workflow.parameters.s3-endpoint}}"
+          insecure: true
+          key: "{{workflow.name}}"
+          accessKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: accessKey
+          secretKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: secretKey
+    outputs:
+      artifacts:
+      - name: data
+        path: /data
+        archive:
+          none: {}
+        s3:
+          bucket: "{{workflow.parameters.s3-bucket-name}}"
+          endpoint: "{{workflow.parameters.s3-endpoint}}"
+          insecure: true
+          key: "{{workflow.name}}"
+          accessKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: accessKey
+          secretKeySecret:
+            name: "{{workflow.parameters.s3-secret-name}}"
+            key: secretKey
+    container:
+      image: "{{workflow.parameters.use-container}}"
+      imagePullPolicy: Always
+      resources:
+        requests:
+          cpu: 1
+      command: [python]
+      args:
+      - /fitting/plot_brazil.py
+      - "--workflow={{workflow.name}}"
+      - "--title=q* 95% CL limit brazil plot"
+      - "--particle=q*"
+      - "--sim-file=QStar/dataLikeHistograms.QStar{0}.root"
+      - "--sim-hist=mjj_Scaled_QStar{0}_30fb"
+      - "--data-dir=data"
+      - "--output-dir=/data/results"
+      - "--expected-limit-dir=/data/generated"
+      - "--data-limit-dir=/data/data"
+      - "--fb=37"

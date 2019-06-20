@@ -1,0 +1,46 @@
+executable     = job_limit.sh
+universe       = vanilla
+arguments      = "$(CLUSTER) $(CLUSTER).$(Process) $(mass) $(Process) $(desc) $(sim_file) $(sim_hist)"
+output         = logs/std-$(CLUSTER).$(Process).out
+error          = logs/std-$(CLUSTER).$(Process).err
+log            = logs/std-$(CLUSTER).$(Process).log
+request_memory = 100
+concurrency_limits = thartland:18
+
+
+sim_file = 'data/dataLikeHistograms.QStar{0}.root'
+sim_hist = 'mjj_Scaled_QStar{0}_30fb'
+desc = 'q* 95% CL limit brazil plot,q*'
+
+mass = 2000
+queue 5
+
+mass = 2500
+queue 5
+
+mass = 3000
+queue 5
+
+mass = 3500
+queue 5
+
+mass = 4000
+queue 5
+
+mass = 4500
+queue 5
+
+mass = 5000
+queue 5
+
+mass = 5500
+queue 5
+
+mass = 6000
+queue 5
+
+mass = 6500
+queue 5
+
+mass = 7000
+queue 5
