@@ -7,7 +7,7 @@ spec:
   arguments:
     parameters:
     - name: use-container
-      value: thartland/cl-fitting
+      value: thartland/masters
     # How many pods to run in parallel for each mass point
     - name: expected-limits-parallelism
       value: 14
@@ -98,7 +98,7 @@ spec:
           cpu: 1
       command: [python]
       args:
-      - /fitting/limit_dist.py
+      - /masters/limit_dist.py
       - "--workflow={{workflow.name}}"
       - "--pod={{pod.name}}"
       - "--mass={{inputs.parameters.mass}}"
@@ -134,7 +134,7 @@ spec:
           cpu: 1
       command: [python]
       args:
-      - /fitting/limit_dist_data_qstar.py
+      - /masters/limit_dist_data_qstar.py
       - "--data-dir=data"
       - "--output-dir=/output"
 
@@ -219,7 +219,7 @@ spec:
           cpu: 1
       command: [python]
       args:
-      - /fitting/plot_brazil.py
+      - /masters/plot_brazil.py
       - "--workflow={{workflow.name}}"
       - "--title=q* 95% CL limit brazil plot"
       - "--particle=q*"
