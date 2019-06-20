@@ -22,6 +22,9 @@ s3.cern.ch
 
 `S3_HOST` value goes into the workflow yaml as a parameter.
 
+A bucket for artifact storage should be created in the S3 storage and its name
+should also given as a parameter in the workflow.
+
 ### Start workflow
 
 ```bash
@@ -33,4 +36,10 @@ $ argo submit --watch masters-workflow.yaml
 In this example the workflow is finding expected limits at two mass points,
 and running two pods in parallel at each.
 
-![](workflow_shape.png)
+![](img/workflow-shape.png)
+
+When the simulated peaks from all data points are used, and with a higher parallelism,
+the final plot is produced and stored in the s3 bucket in directory `{{workflow.name}}/results`,
+taking only a few minutes to complete in a large cluster.
+
+![](img/brazil-masters-workflow-l2k4r.png)
