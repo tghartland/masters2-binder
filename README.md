@@ -23,7 +23,7 @@ s3.cern.ch
 `S3_HOST` value goes into the workflow yaml as a parameter.
 
 A bucket for artifact storage should be created in the S3 storage and its name
-should also given as a parameter in the workflow.
+should also be given as a parameter in the workflow.
 
 ### Start workflow
 
@@ -35,6 +35,10 @@ $ argo submit --watch masters-workflow.yaml
 
 In this example the workflow is finding expected limits at two mass points,
 and running two pods in parallel at each.
+
+```bash
+$ kubectl -n argo port-forward service/argo-ui 8001:80
+```
 
 ![](img/workflow-shape.png)
 
