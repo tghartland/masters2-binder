@@ -42,6 +42,8 @@ $ kubectl -n argo port-forward service/argo-ui 8001:80
 
 ![](img/workflow-shape.png)
 
+### Result
+
 When the simulated peaks from all data points are used, and with a higher parallelism,
 the final plot is produced and stored in the s3 bucket in directory `{{workflow.name}}/results`,
 taking only a few minutes to complete in a large cluster.
