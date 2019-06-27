@@ -3,8 +3,10 @@
 ### Argo installation
 
 ```bash
-kubectl create namespace argo
-kubectl apply -n argo -f https://raw.githubusercontent.com/argoproj/argo/stable/manifests/install.yaml
+$ kubectl create namespace argo
+$ kubectl apply -n argo -f https://raw.githubusercontent.com/argoproj/argo/stable/manifests/install.yaml
+
+$ kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=default:default
 ```
 
 ### Setup S3 storage
