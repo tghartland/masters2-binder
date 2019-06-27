@@ -86,7 +86,7 @@ spec:
         s3:
           bucket: "{{workflow.parameters.s3-bucket-name}}"
           endpoint: "{{workflow.parameters.s3-endpoint}}"
-          insecure: true
+          insecure: false
           key: "{{workflow.name}}/generated/{{inputs.parameters.mass}}"
           accessKeySecret:
             name: "{{workflow.parameters.s3-secret-name}}"
@@ -122,7 +122,7 @@ spec:
         s3:
           bucket: "{{workflow.parameters.s3-bucket-name}}"
           endpoint: "{{workflow.parameters.s3-endpoint}}"
-          insecure: true
+          insecure: false
           key: "{{workflow.name}}/data/"
           accessKeySecret:
             name: "{{workflow.parameters.s3-secret-name}}"
@@ -152,7 +152,7 @@ spec:
         s3:
           bucket: "{{workflow.parameters.s3-bucket-name}}"
           endpoint: "{{workflow.parameters.s3-endpoint}}"
-          insecure: true
+          insecure: false
           key: "{{workflow.name}}/generated/{{inputs.parameters.mass}}"
           accessKeySecret:
             name: "{{workflow.parameters.s3-secret-name}}"
@@ -169,7 +169,7 @@ spec:
         s3:
           bucket: "{{workflow.parameters.s3-bucket-name}}"
           endpoint: "{{workflow.parameters.s3-endpoint}}"
-          insecure: true
+          insecure: false
           key: "{{workflow.name}}/generated/{{inputs.parameters.mass}}"
           accessKeySecret:
             name: "{{workflow.parameters.s3-secret-name}}"
@@ -190,7 +190,7 @@ spec:
         s3:
           bucket: "{{workflow.parameters.s3-bucket-name}}"
           endpoint: "{{workflow.parameters.s3-endpoint}}"
-          insecure: true
+          insecure: false
           key: "{{workflow.name}}"
           accessKeySecret:
             name: "{{workflow.parameters.s3-secret-name}}"
@@ -207,7 +207,7 @@ spec:
         s3:
           bucket: "{{workflow.parameters.s3-bucket-name}}"
           endpoint: "{{workflow.parameters.s3-endpoint}}"
-          insecure: true
+          insecure: false
           key: "{{workflow.name}}"
           accessKeySecret:
             name: "{{workflow.parameters.s3-secret-name}}"
