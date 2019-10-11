@@ -1,0 +1,22 @@
+FROM centos:7
+
+RUN yum -y update
+RUN yum install -y epel-release
+RUN yum -y install yum-utils
+RUN yum -y groupinstall development
+RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+RUN yum -y install python36u
+
+RUN yum install -y root root-core python3-root
+
+RUN yum install -y python3-pip python3-jupyroot
+RUN pip3 install --upgrade pip 
+RUN pip3 install --no-cache-dir notebook==6.* scipy
+RUN yum clean all 
+RUN rm -rf /var/cache/yum
+
+RUN curl -o /usr/bin/kubectl -L https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+RUN chmod +x /usr/bin/kubectl
+
+RUN curl -o /usr/bin/argo -L https://github.com/argoproj/argo/releases/download/v2.4.1/argo-linux-amd64
+RUN chmod +x /usr/bin/argo
