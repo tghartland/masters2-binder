@@ -9,6 +9,7 @@ from scipy.stats import poisson
 import random
 import time
 import sys
+import json
 
 from array import array
 import ROOT
@@ -437,6 +438,7 @@ def generate_expected_limits():
             sys.stdout.flush()
             sys.stderr.flush()
             print("Iteration {0}, limit = {1}, time = {2:.02f}\n".format(total_iterations, limit, time.time()-st))
+            print("output:{}".format(json.dumps({"limit": limit, "mass": int(MASS_FILE)}))
             sys.stdout.flush()
             times_taken.append((limit, time.time()-st))
             if limit is None:
