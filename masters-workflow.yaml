@@ -7,7 +7,7 @@ spec:
   arguments:
     parameters:
     - name: use-container
-      value: gitlab-registry.cern.ch/thartlan/containers/masters2:v3
+      value: gitlab-registry.cern.ch/thartlan/containers/masters2:v4
     # How many pods to run in parallel for each mass point
     - name: expected-limits-parallelism
       value: 3
@@ -111,6 +111,9 @@ spec:
       - "--data-dir=data"
       - "--output-dir=/output"
       - "--successes={{workflow.parameters.limits-per-pod}}"
+    metadata:
+      labels:
+        masters-workflow/mass: "{{inputs.parameters.mass}}"
     tolerations:
     - key: "virtual-kubelet.io/provider"
       operator: "Exists"
