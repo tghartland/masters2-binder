@@ -7,13 +7,13 @@ spec:
   arguments:
     parameters:
     - name: use-container
-      value: thartland/masters
+      value: gitlab-registry.cern.ch/thartlan/containers/masters2:v3
     # How many pods to run in parallel for each mass point
     - name: expected-limits-parallelism
-      value: 14
+      value: 3
     # How many expected limits to find per pod
     - name: limits-per-pod
-      value: 50
+      value: 100
 
     # Mass points to find limits at
     - name: mass-points
@@ -96,7 +96,7 @@ spec:
             key: secretKey
     container:
       image: "{{workflow.parameters.use-container}}"
-      imagePullPolicy: Always
+      imagePullPolicy: IfNotPresent
       resources:
         requests:
           cpu: 1
@@ -111,6 +111,9 @@ spec:
       - "--data-dir=data"
       - "--output-dir=/output"
       - "--successes={{workflow.parameters.limits-per-pod}}"
+    tolerations:
+    - key: "virtual-kubelet.io/provider"
+      operator: "Exists"
 
   - name: limits-from-data
     outputs:
@@ -132,7 +135,7 @@ spec:
             key: secretKey
     container:
       image: "{{workflow.parameters.use-container}}"
-      imagePullPolicy: Always
+      imagePullPolicy: IfNotPresent
       resources:
         requests:
           cpu: 1
@@ -141,6 +144,9 @@ spec:
       - /masters/limit_dist_data_qstar.py
       - "--data-dir=data"
       - "--output-dir=/output"
+    tolerations:
+    - key: "virtual-kubelet.io/provider"
+      operator: "Exists"
 
   - name: collect-results
     inputs:
@@ -178,7 +184,7 @@ spec:
             name: "{{workflow.parameters.s3-secret-name}}"
             key: secretKey
     container:
-      image: alpine:latest
+      image: alpine:3
       command: [sh, -c]
       args: ["cat /data/* > /data/combined-{{inputs.parameters.mass}}.txt"]
 
@@ -217,7 +223,7 @@ spec:
             key: secretKey
     container:
       image: "{{workflow.parameters.use-container}}"
-      imagePullPolicy: Always
+      imagePullPolicy: IfNotPresent
       resources:
         requests:
           cpu: 1
@@ -234,3 +240,6 @@ spec:
       - "--expected-limit-dir=/data/generated"
       - "--data-limit-dir=/data/data"
       - "--fb=37"
+    tolerations:
+    - key: "virtual-kubelet.io/provider"
+      operator: "Exists"
