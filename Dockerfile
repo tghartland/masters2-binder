@@ -8,12 +8,12 @@ ENV NB_UID ${NB_UID}
 ENV HOME /home/${NB_USER}
 
 RUN useradd -m --shell=/bin/bash --uid=${NB_UID} ${NB_USER}
+
+WORKDIR ${HOME}
+ADD . ${HOME}
+
 USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
-
-WORKDIR ${HOME}
-
-ADD . ${HOME}
 
 ENTRYPOINT []
