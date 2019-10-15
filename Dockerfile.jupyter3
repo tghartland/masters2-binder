@@ -7,11 +7,19 @@ RUN yum -y groupinstall development
 RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
 RUN yum -y install python36u
 
+RUN curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+RUN yum -y install nodejs
+
 RUN yum install -y root root-core python3-root
 
 RUN yum install -y python3-pip python3-jupyroot
 RUN pip3 install --no-cache-dir --upgrade pip 
 RUN pip3 install --no-cache-dir notebook==6.* scipy jupyterhub jupyterlab
+RUN pip3 install --no-cache-dir rootpy matplotlib ipympl
+
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
+RUN jupyter labextension install jupyter-matplotlib
+
 RUN yum clean all 
 RUN rm -rf /var/cache/yum
 
