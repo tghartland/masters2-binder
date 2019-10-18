@@ -1,5 +1,7 @@
 # masters2
 
+[![Binder](https://binder.cern.ch/badge_logo.svg)](https://binder.cern.ch/v2/gh/tghartland/masters2-binder/py3?urlpath=%2Flab)
+
 ### Argo installation
 
 ```bash
