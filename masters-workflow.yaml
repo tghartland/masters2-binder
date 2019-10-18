@@ -7,10 +7,10 @@ spec:
   arguments:
     parameters:
     - name: use-container
-      value: gitlab-registry.cern.ch/thartlan/containers/masters2:v4
+      value: gitlab-registry.cern.ch/thartlan/containers/masters2:v9
     # How many pods to run in parallel for each mass point
     - name: expected-limits-parallelism
-      value: 3
+      value: 2
     # How many expected limits to find per pod
     - name: limits-per-pod
       value: 100
@@ -26,10 +26,23 @@ spec:
     - name: s3-bucket-name
       value: "thartland-argo-bucket"
 
+    - name: redis-host
+      value: "123.456.789.0"
+    - name: redis-port
+      value: 32131
+
   templates:
   - name: masters-workflow
     dag:
       tasks:
+      - name: init-redis
+        template: init-redis
+
+      - name: limits-data
+        # Find the upper limit of particle production rate based on the measured dijet distribution
+        template: limits-from-data
+        dependencies: [init-redis]
+
       - name: limits-expected
         # Find the expected upper limit of particle production rate based on dijet distributions
         # generated from the theoretical standard model background
@@ -39,16 +52,28 @@ spec:
           - name: mass
             value: "{{item}}"
         withParam: "{{workflow.parameters.mass-points}}"
-
-      - name: limits-data
-        # Find the upper limit of particle production rate based on the measured dijet distribution
-        template: limits-from-data
+        dependencies: [init-redis]
 
       - name: plot
         # Combine the generated expected limits and the limits obtained
         # from the measured data into the final plot
         template: plot
         dependencies: [limits-expected, limits-data]
+
+  - name: init-redis
+    container:
+      image: gitlab-registry.cern.ch/thartlan/containers/masters-init-redis:v1
+      imagePullPolicy: IfNotPresent
+      args:
+      - "--workflow={{workflow.name}}"
+      - "--particle=q*"
+      - "--sim-file=QStar/dataLikeHistograms.QStar{0}.root"
+      - "--sim-hist=mjj_Scaled_QStar{0}_30fb"
+      - "--fb=37"
+      - "--masses={{workflow.parameters.mass-points}}"
+      - "--redis-host={{workflow.parameters.redis-host}}"
+      - "--redis-port={{workflow.parameters.redis-port}}"
+
 
   - name: expected-limit-at-mass
     inputs:
@@ -111,6 +136,8 @@ spec:
       - "--data-dir=data"
       - "--output-dir=/output"
       - "--successes={{workflow.parameters.limits-per-pod}}"
+      - "--redis-host={{workflow.parameters.redis-host}}"
+      - "--redis-port={{workflow.parameters.redis-port}}"
     metadata:
       labels:
         masters-workflow/mass: "{{inputs.parameters.mass}}"
@@ -145,8 +172,11 @@ spec:
       command: [python]
       args:
       - /masters/limit_dist_data_qstar.py
+      - "--workflow={{workflow.name}}"
       - "--data-dir=data"
       - "--output-dir=/output"
+      - "--redis-host={{workflow.parameters.redis-host}}"
+      - "--redis-port={{workflow.parameters.redis-port}}"
     tolerations:
     - key: "virtual-kubelet.io/provider"
       operator: "Exists"

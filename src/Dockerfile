@@ -1,15 +1,13 @@
-FROM centos:7
+FROM gitlab-registry.cern.ch/thartlan/containers/pyroot:v5
 
 WORKDIR /masters
 
-RUN yum install -y epel-release
-RUN yum install -y root root-core python2-root
-RUN yum install -y scipy
+RUN pip install --no-cache redis
 
-ADD data ./data/
+ADD ../data ./data/
 ADD *.cpp ./
 ADD *.h ./
-ADD *.so ./
+# ADD *.so ./
 ADD limit_dist.py ./
 ADD limit_dist_data_qstar.py ./
 ADD plot_brazil.py ./

@@ -1,0 +1,7 @@
+FROM python:3.6-alpine
+
+RUN pip3 install redis
+
+COPY init_redis.py .
+
+ENTRYPOINT ["python", "init_redis.py"]

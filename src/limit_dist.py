@@ -11,6 +11,8 @@ import time
 import sys
 import json
 
+import redis
+
 from array import array
 import ROOT
 from ROOT import TFile, TH1D, TCanvas, gStyle, gROOT, TF1, TColor, TMinuit, gPad, TPad, TMath
@@ -27,6 +29,9 @@ parser.add_argument("--sim-hist", help="histogram to use from simulated data fil
 parser.add_argument("--data-dir", help="directory where data files are located")
 parser.add_argument("--output-dir", help="directory to write output to")
 parser.add_argument("--successes", type=int, help="stop after this number of successful fits")
+
+parser.add_argument("--redis-host", help="redis hostname", required=True)
+parser.add_argument("--redis-port", help="redis port", required=True)
 args = parser.parse_args()
 
 print("Loading macros")
@@ -418,6 +423,9 @@ def fit_significance(num_injected_events, plot=True, name=""):
 
 
 def generate_expected_limits():
+
+    r = redis.Redis(host=args.redis_host, port=args.redis_port, db=0)
+
     start_time = time.time()
 
     want_successes = args.successes
@@ -438,7 +446,9 @@ def generate_expected_limits():
             sys.stdout.flush()
             sys.stderr.flush()
             print("Iteration {0}, limit = {1}, time = {2:.02f}\n".format(total_iterations, limit, time.time()-st))
-            print("output:{}".format(json.dumps({"limit": limit, "mass": int(MASS_FILE)}))
+            if limit is not None:
+                r.rpush("{}:expected-limits:{}".format(args.workflow, MASS_FILE), limit)
+                print("output:{}".format(json.dumps({"limit": limit, "mass": int(MASS_FILE)})))
             sys.stdout.flush()
             times_taken.append((limit, time.time()-st))
             if limit is None:

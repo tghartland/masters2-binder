@@ -10,6 +10,8 @@ import random
 import time
 import sys
 
+import redis
+
 from array import array
 import ROOT
 from ROOT import TFile, TH1D, TCanvas, gStyle, gROOT, TF1, TColor, TMinuit, gPad, TPad
@@ -18,10 +20,12 @@ from ROOT.Math import GaussIntegrator, WrappedTF1, IParamFunction
 from ROOT.Math import IParametricFunctionOneDim
 
 parser = argparse.ArgumentParser(description="Find C.L limits for data distribution")
-#parser.add_argument("--workflow", help="workflow name")
+parser.add_argument("--workflow", help="workflow name")
 #parser.add_argument("--pod", help="pod name")
 parser.add_argument("--data-dir", help="directory where data files are located")
 parser.add_argument("--output-dir", help="directory to write output to")
+parser.add_argument("--redis-host", help="redis hostname", required=True)
+parser.add_argument("--redis-port", help="redis port", required=True)
 args = parser.parse_args()
 
 
@@ -562,6 +566,8 @@ def fit_data_likelihood(simulation_mass):
 
 
 def data_confidence_dist():
+    r = redis.Redis(host=args.redis_host, port=args.redis_port, db=0)
+
     start_time = time.time()
 
     if not op.exists(args.output_dir):
@@ -571,6 +577,7 @@ def data_confidence_dist():
         for mass in range(2000, 7001, 500):
             print("Testing mass {0}".format(mass))
             limit = fit_data_likelihood(mass)
+            r.hset("{}:data-limits".format(args.workflow), mass, limit)
             out_file.write("{0}:{1}\n".format(mass, limit))
 
     print("Took {0:.02f} seconds".format(time.time()-start_time))

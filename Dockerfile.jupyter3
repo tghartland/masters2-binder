@@ -14,8 +14,8 @@ RUN yum install -y root root-core python3-root
 
 RUN yum install -y python3-pip python3-jupyroot
 RUN pip3 install --no-cache-dir --upgrade pip 
-RUN pip3 install --no-cache-dir notebook==6.* scipy jupyterhub jupyterlab
-RUN pip3 install --no-cache-dir rootpy matplotlib ipympl
+RUN pip3 install --no-cache-dir notebook==6.* jupyterhub jupyterlab
+RUN pip3 install --no-cache-dir rootpy ipympl matplotlib numpy scipy redis
 
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
 RUN jupyter labextension install jupyter-matplotlib
