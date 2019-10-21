@@ -8,6 +8,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
+from matplotlib.ticker import AutoMinorLocator
 
 y_limits = {
     "q*": (1e-4, 4),
@@ -93,5 +94,6 @@ def plot(ax, data, theory_data, processed_data):
     ax.yaxis.set_ticks_position("both")
     ax.xaxis.set_ticks_position("both")
     ax.tick_params(which="both", direction="in")
+    ax.xaxis.set_minor_locator(AutoMinorLocator())
     
     ax.set_title("{} 95% CL limit ({})".format(particle_symbol[data["particle"]], data["workflow"]), pad=12)
