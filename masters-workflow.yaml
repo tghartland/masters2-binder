@@ -13,7 +13,7 @@ spec:
       value: 2
     # How many expected limits to find per pod
     - name: limits-per-pod
-      value: 100
+      value: 50
 
     # Mass points to find limits at
     - name: mass-points
@@ -124,7 +124,7 @@ spec:
       imagePullPolicy: IfNotPresent
       resources:
         requests:
-          cpu: 1
+          cpu: 850m
       command: [python]
       args:
       - /masters/limit_dist.py
@@ -220,6 +220,9 @@ spec:
       image: alpine:3
       command: [sh, -c]
       args: ["cat /data/* > /data/combined-{{inputs.parameters.mass}}.txt"]
+    tolerations:
+    - key: "virtual-kubelet.io/provider"
+      operator: "Exists"
 
   - name: plot
     inputs:

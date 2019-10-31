@@ -1,4 +1,4 @@
-FROM gitlab-registry.cern.ch/thartlan/containers/jupyter3:v7
+FROM gitlab-registry.cern.ch/thartlan/containers/jupyterlab:v1
 
 ARG NB_USER=jovyan
 ARG NB_UID=1000
