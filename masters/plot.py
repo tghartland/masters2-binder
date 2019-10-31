@@ -89,8 +89,8 @@ def plot(ax, data, theory_data, processed_data):
     ax.text(0.95, 0.95, r"$\sqrt{s}=13\,\mathrm{TeV}$, $37\mathrm{fb}^{-1}$" "\n" r"$|y^{*}|<0.6$", horizontalalignment='right', verticalalignment='top',
             fontsize=12, transform=ax.transAxes)
 
-    ax.set_ylabel(r"$\sigma \times \mathrm{A} \times \mathrm{BR} \, \mathrm{[pb]}$", size=15, horizontalalignment="right", y=1)
-    ax.set_xlabel(r"$\mathrm{m}_{\mathrm{q}^{*}}$", size=15, horizontalalignment="right", x=1)
+    ax.set_ylabel(r"$\sigma \times \mathrm{A} \times \mathrm{BR} \, \mathrm{[pb]}$", size=14, horizontalalignment="right", y=1)
+    ax.set_xlabel(r"$\mathrm{m}_{\mathrm{q}^{*}}$", size=14, horizontalalignment="right", x=1, labelpad=2)
     ax.yaxis.set_ticks_position("both")
     ax.xaxis.set_ticks_position("both")
     ax.tick_params(which="both", direction="in")
