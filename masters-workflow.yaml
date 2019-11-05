@@ -7,13 +7,13 @@ spec:
   arguments:
     parameters:
     - name: use-container
-      value: gitlab-registry.cern.ch/thartlan/containers/masters2:v9
+      value: gitlab-registry.cern.ch/thartlan/containers/masters2:v1
     # How many pods to run in parallel for each mass point
     - name: expected-limits-parallelism
-      value: 2
+      value: 4
     # How many expected limits to find per pod
     - name: limits-per-pod
-      value: 50
+      value: 20
 
     # Mass points to find limits at
     - name: mass-points
@@ -121,7 +121,7 @@ spec:
             key: secretKey
     container:
       image: "{{workflow.parameters.use-container}}"
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       resources:
         requests:
           cpu: 850m
@@ -165,7 +165,7 @@ spec:
             key: secretKey
     container:
       image: "{{workflow.parameters.use-container}}"
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       resources:
         requests:
           cpu: 1
