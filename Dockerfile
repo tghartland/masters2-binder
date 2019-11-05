@@ -12,6 +12,7 @@ RUN useradd -m --shell=/bin/bash --uid=${NB_UID} ${NB_USER}
 WORKDIR ${HOME}
 ADD data ${HOME}/data
 ADD masters ${HOME}/masters
+ADD redis ${HOME}/redis
 ADD src ${HOME}/src
 ADD *.yaml ${HOME}/
 ADD *.ipynb ${HOME}/
