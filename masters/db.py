@@ -1,9 +1,6 @@
 import redis
 
-HOST = "123.456.789.0"
-PORT = 32131
-
-def create_client():
+def create_client(HOST, PORT):
     r = redis.Redis(host=HOST, port=PORT, db=0)
     return r
     
