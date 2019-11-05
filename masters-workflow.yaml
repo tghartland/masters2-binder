@@ -22,14 +22,14 @@ spec:
     - name: s3-endpoint
       value: "s3.cern.ch"
     - name: s3-secret-name
-      value: "cern-s3-cred"
+      value: "s3-cred"
     - name: s3-bucket-name
-      value: "thartland-argo-bucket"
+      value: "argo-bucket"
 
     - name: redis-host
-      value: "123.456.789.0"
+      value: "redis.redis.svc"
     - name: redis-port
-      value: 32131
+      value: 6379
 
   templates:
   - name: masters-workflow

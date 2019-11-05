@@ -44,7 +44,7 @@ $ S3_HOST=$(openstack catalog show s3 -f value -c endpoints | grep public | cut 
 $ ACCESS_KEY=$(openstack ec2 credentials create -f value -c access)
 $ SECRET_KEY=$(openstack ec2 credentials show $ACCESS_KEY -f value -c secret)
 
-$ kubectl create secret generic cern-s3-cred --from-literal=accessKey=$ACCESS_KEY --from-literal=secretKey=$SECRET_KEY
+$ kubectl create secret generic s3-cred --from-literal=accessKey=$ACCESS_KEY --from-literal=secretKey=$SECRET_KEY
 
 $ echo $S3_HOST
 s3.cern.ch
