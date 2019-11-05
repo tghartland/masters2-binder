@@ -4,25 +4,8 @@
 
 ### With binder
 
-Set up a cluster as in the steps below, and launch the jupyterlab instance with the binder link above.
-
-Upload a kubeconfig file (either cluster admin or for a specific RBAC account) and move it to ~/.kube/config in jupyterlab.
-
-Start a redis db using [this manifest](./redis/redis.yaml) and the [associated service](./redis/redis-svc.yaml).
-The service IP needs to be copied to two places:
-
-* in masters-workflow.yaml, the parameter `redis-host`
-* in masters/db.py, the variable `HOST`
-
-Launch the notebook masters-notebook.ipynb and start going through the steps.
-
-Leave a few seconds after the `plot.setup_figure()` step for the figure to initialize or it will
-not resize properly.
-
-After submitting the workflow to argo, copy the workflow name from the first line of output and paste it
-into the workflow variable on the first line of the next step.
-
-The last step will loop and continuously update the figure with the data pulled from redis.
+Click to launch a jupyterlab instance with the binder link above,
+and follow the instructions in `README.ipynb`.
 
 ### Argo installation
 
